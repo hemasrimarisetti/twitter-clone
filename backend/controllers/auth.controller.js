@@ -1,4 +1,4 @@
-import User from '../models/user.module.js';
+import User from '../models/user.model.js';
 import bcrypt from 'bcryptjs';
 import { generateTokenAndSetCookie } from '../lib/utils/generateToken.js';
 
