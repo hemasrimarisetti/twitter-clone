@@ -23,9 +23,10 @@ const app=express();
 const PORT=process.env.PORT || 5000;
 
 
-app.use(express.json());//to parse request.body
+app.use(express.json({limit:"5mb"}));//to parse request.body
+//limit shouldnt be too high to prevent DOS
 app.use(express.urlencoded({extended:true}));//to parse from data
-
+ 
 
 app.use(cookieParser())
  
