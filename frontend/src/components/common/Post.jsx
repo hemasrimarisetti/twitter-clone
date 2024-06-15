@@ -5,14 +5,15 @@ import { FaRegBookmark } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import {toast} from "react-hot-toast";
-import { useQueryClient } from "@tanstack/react-query";
-import LoadingSpinner from "./LoadingSpinner"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
+
+import LoadingSpinner from "./LoadingSpinner";
 import { formatPostDate } from "../../utils/date";
+
 const Post = ({ post }) => {
 	const [comment, setComment] = useState("");
-	const {data:authUser}=useQuery({queryKey:["authUser"]});
+	const { data: authUser } = useQuery({ queryKey: ["authUser"] });
 	const queryClient = useQueryClient();
 	const postOwner = post.user;
 	const isLiked = post.likes.includes(authUser._id);
@@ -21,31 +22,28 @@ const Post = ({ post }) => {
 
 	const formattedDate = formatPostDate(post.createdAt);
 
-	
-	const {mutate:deletePost,isPending:isDeleting} = useMutation({
-		mutationFn:async()=>{
-			try{
-                 const res = await fetch(`/api/posts/${post._id}`,{
-				 method:"DELETE",
-			}
-	)
-	const data = await res.json();
+	const { mutate: deletePost, isPending: isDeleting } = useMutation({
+		mutationFn: async () => {
+			try {
+				const res = await fetch(`/api/posts/${post._id}`, {
+					method: "DELETE",
+				});
+				const data = await res.json();
 
-	if(!res.ok){
-		throw new Error(data.error||"Something went wrong");
-	}
-	return data
-			}
-	catch(error){
-           throw new Error(error);
+				if (!res.ok) {
+					throw new Error(data.error || "Something went wrong");
+				}
+				return data;
+			} catch (error) {
+				throw new Error(error);
 			}
 		},
-		onSuccess:()=>{
-			toast.success("post deleted successfully");
-	        queryClient.invalidateQueries({queryKey:["posts"]});
-		}
+		onSuccess: () => {
+			toast.success("Post deleted successfully");
+			queryClient.invalidateQueries({ queryKey: ["posts"] });
+		},
 	});
- 
+
 	const { mutate: likePost, isPending: isLiking } = useMutation({
 		mutationFn: async () => {
 			try {
@@ -110,22 +108,19 @@ const Post = ({ post }) => {
 		},
 	});
 
- 
-
 	const handleDeletePost = () => {
 		deletePost();
 	};
 
 	const handlePostComment = (e) => {
 		e.preventDefault();
-		if(isCommenting)return;
+		if (isCommenting) return;
 		commentPost();
-
 	};
 
 	const handleLikePost = () => {
-		if(isLiking)return;
-		likePost()
+		if (isLiking) return;
+		likePost();
 	};
 
 	return (
@@ -148,10 +143,11 @@ const Post = ({ post }) => {
 						</span>
 						{isMyPost && (
 							<span className='flex justify-end flex-1'>
-								{!isDeleting&&(<FaTrash className='cursor-pointer hover:text-red-500' onClick={handleDeletePost} />)}
-								{isDeleting&&(
-									<LoadingSpinner size='sm'/>
+								{!isDeleting && (
+									<FaTrash className='cursor-pointer hover:text-red-500' onClick={handleDeletePost} />
 								)}
+
+								{isDeleting && <LoadingSpinner size='sm' />}
 							</span>
 						)}
 					</div>
@@ -218,8 +214,8 @@ const Post = ({ post }) => {
 											onChange={(e) => setComment(e.target.value)}
 										/>
 										<button className='btn btn-primary rounded-full btn-sm text-white px-4'>
-											{isCommenting ?<LoadingSpinner size ='md'/>:"Post"}
-										</button> 
+											{isCommenting ? <LoadingSpinner size='md' /> : "Post"}
+										</button>
 									</form>
 								</div>
 								<form method='dialog' className='modal-backdrop'>
@@ -231,15 +227,17 @@ const Post = ({ post }) => {
 								<span className='text-sm text-slate-500 group-hover:text-green-500'>0</span>
 							</div>
 							<div className='flex gap-1 items-center group cursor-pointer' onClick={handleLikePost}>
-								{isLiking &&<LoadingSpinner size='sm'/>}
-								{!isLiked && !isLiking &&(
+								{isLiking && <LoadingSpinner size='sm' />}
+								{!isLiked && !isLiking && (
 									<FaRegHeart className='w-4 h-4 cursor-pointer text-slate-500 group-hover:text-pink-500' />
 								)}
-								{isLiked &&! isLiking &&<FaRegHeart className='w-4 h-4 cursor-pointer text-pink-500 ' />}
+								{isLiked && !isLiking && (
+									<FaRegHeart className='w-4 h-4 cursor-pointer text-pink-500 ' />
+								)}
 
 								<span
 									className={`text-sm  group-hover:text-pink-500 ${
-										isLiked ? "text-pink-500" : "text-slate-500 "
+										isLiked ? "text-pink-500" : "text-slate-500"
 									}`}
 								>
 									{post.likes.length}
